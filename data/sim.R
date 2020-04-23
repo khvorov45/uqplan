@@ -8,7 +8,8 @@ data_dir <- here("data")
 
 # Functions ===================================================================
 
-simulate_data <- function(n_per_group, beta_0, group_parameters, random_sds) {
+simulate_data <- function(n_per_group, beta_0, beta_week, beta_hockey,
+                          group_parameters, random_sds, logtitre_sd) {
   weeks <- c(0L, 2L, 4L, 6L, 8L)
   tibble(
     ind = rep(
@@ -26,40 +27,52 @@ simulate_data <- function(n_per_group, beta_0, group_parameters, random_sds) {
       ),
       each = length(weeks)
     ),
-    b1_before_group = map_dbl(
-      group, ~ group_parameters[[.x]][["b1_before"]]
+    beta_week_group = beta_week + map_dbl(
+      group, ~ group_parameters[[.x]][["beta_week"]]
     ),
-    b1_after_group = map_dbl(
-      group, ~ group_parameters[[.x]][["b1_after"]]
-    ),
-    b1_before_ind = rep(rnorm(
-      n_per_group * length(group_parameters),
-      unique(b1_before_group), random_sds[["b1_before"]]
-    ), each = length(weeks)),
-    b1_after_ind = rep(rnorm(
-      n_per_group * length(group_parameters),
-      unique(b1_after_group), random_sds[["b1_after"]]
-    ), each = length(weeks)),
-    hockey = if_else(week < 2L, 0L, week - 2L),
-    logtitre = beta_0_ind + b1_before_ind * week + b1_after_ind * hockey
-  )
+    beta_hockey_group = beta_hockey + map_dbl(
+      group, ~ group_parameters[[.x]][["beta_hockey"]]
+    )
+  ) %>%
+    group_by(ind) %>%
+    mutate(
+      beta_week_ind = rnorm(
+        1, first(beta_week_group), random_sds[["beta_week"]]
+      ),
+      beta_hockey_ind = rnorm(
+        1, first(beta_hockey_group), random_sds[["beta_hockey"]]
+      )
+    ) %>%
+    ungroup() %>%
+    mutate(
+      hockey = if_else(week < 2L, 0L, week - 2L),
+      logtitre_exp =
+        beta_0_ind + beta_week_ind * week + beta_hockey_ind * hockey,
+      logtitre = rnorm(n(), logtitre_exp, logtitre_sd)
+    )
+}
+
+save_sim <- function(data, name) {
+  write_csv(data, file.path(data_dir, glue::glue("sim-{name}.csv")))
 }
 
 # Script ======================================================================
 
-# Everything is expressed as parameters, not differences
+# Everything is expressed as deviation from the reference
 group_parameters <- list(
-  reference = c("b1_before" = 0, "b1_after" = 0),
-  low_dose = c("b1_before" = 3, "b1_after" = -0.1),
-  high_dose_1 = c("b1_before" = 4, "b1_after" = -0.07),
-  high_dose_2 = c("b1_before" = 5, "b1_after" = -0.05)
+  reference = c("beta_week" = 0, "beta_hockey" = 0),
+  low_dose = c("beta_week" = 3, "beta_hockey" = -3.1),
+  high_dose_1 = c("beta_week" = 4, "beta_hockey" = -4.07),
+  high_dose_2 = c("beta_week" = 5, "beta_hockey" = -5.05)
 )
 
-simulated_data <- simulate_data(
-  n_per_group = 24,
+expected <- simulate_data(
+  n_per_group = 1,
   beta_0 = 0,
+  beta_week = 0,
+  beta_hockey = 0,
   group_parameters = group_parameters,
-  random_sds = list("beta_0" = 1, "b1_before" = 1.2, "b1_after" = 0.02)
+  random_sds = list("beta_0" = 0, "beta_week" = 0, "beta_hockey" = 0),
+  logtitre_sd = 0
 )
-
-write_csv(simulated_data, file.path(data_dir, "sim.csv"))
+save_sim(expected, "expected")

@@ -1,6 +1,6 @@
 rule all:
     input:
-        "data/sim.csv"
+        "data-plot/spag-sim-expected.pdf"
 
 rule install_deps:
     input:
@@ -15,6 +15,16 @@ rule sim_data:
         ".deps-installed",
         "data/sim.R"
     output:
-        "data/sim.csv"
+        "data/sim-expected.csv"
     shell:
         "Rscript data/sim.R"
+
+rule plot_data:
+    input:
+        ".deps-installed",
+        "data/sim-expected.csv",
+        "data-plot/spag.R"
+    output:
+        "data-plot/spag-sim-expected.pdf"
+    shell:
+        "Rscript data-plot/spag.R"
