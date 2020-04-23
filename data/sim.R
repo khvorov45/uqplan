@@ -76,3 +76,14 @@ expected <- simulate_data(
   logtitre_sd = 0
 )
 save_sim(expected, "expected")
+
+norand <- simulate_data(
+  n_per_group = 24,
+  beta_0 = 0,
+  beta_week = 0,
+  beta_hockey = 0,
+  group_parameters = group_parameters,
+  random_sds = list("beta_0" = 0, "beta_week" = 0, "beta_hockey" = 0),
+  logtitre_sd = 1
+)
+save_sim(norand, "norand")

@@ -50,3 +50,7 @@ save_spag <- function(pl, name, width = 12, height = 7.5) {
 sim_expected <- read_data("sim-expected")
 sim_expected_spag <- spag_plot(sim_expected)
 save_spag(sim_expected_spag, "sim-expected")
+
+sim_norand <- read_data("sim-norand")
+sim_norand_spag <- spag_plot(sim_norand)
+save_spag(sim_norand_spag, "sim-norand")
