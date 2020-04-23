@@ -46,9 +46,11 @@ simulate_data <- function(n_per_group, beta_0, beta_week, beta_hockey,
     ungroup() %>%
     mutate(
       hockey = if_else(week < 2L, 0L, week - 2L),
-      logtitre_exp =
+      logtitre_exp_group =
+        beta_0 + beta_week_group * week + beta_hockey_group * hockey,
+      logtitre_exp_ind =
         beta_0_ind + beta_week_ind * week + beta_hockey_ind * hockey,
-      logtitre = rnorm(n(), logtitre_exp, logtitre_sd)
+      logtitre = rnorm(n(), logtitre_exp_ind, logtitre_sd)
     )
 }
 
@@ -76,3 +78,14 @@ norand <- simulate_data(
   logtitre_sd = 1
 )
 save_sim(norand, "norand")
+
+rand <- simulate_data(
+  n_per_group = 24,
+  beta_0 = 0,
+  beta_week = 0,
+  beta_hockey = 0,
+  group_parameters = group_parameters,
+  random_sds = list("beta_0" = 0.5, "beta_week" = 0.1, "beta_hockey" = 0.05),
+  logtitre_sd = 0.5
+)
+save_sim(rand, "rand")

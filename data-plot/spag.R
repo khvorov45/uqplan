@@ -25,7 +25,7 @@ spag_plot <- function(dat) {
       breaks = log(titre_breaks), labels = titre_breaks
     ) +
     geom_line(aes(group = ind), alpha = 0.2) +
-    geom_line(aes(y = logtitre_exp), lwd = 1, col = "red")
+    geom_line(aes(y = logtitre_exp_group), lwd = 1, col = "red")
 }
 
 save_spag <- function(pl, name, width = 12, height = 7.5) {
@@ -40,3 +40,7 @@ save_spag <- function(pl, name, width = 12, height = 7.5) {
 sim_norand <- read_data("sim-norand")
 sim_norand_spag <- spag_plot(sim_norand)
 save_spag(sim_norand_spag, "sim-norand")
+
+sim_rand <- read_data("sim-rand")
+sim_rand_spag <- spag_plot(sim_rand)
+save_spag(sim_rand_spag, "sim-rand")

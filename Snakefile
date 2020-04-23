@@ -1,6 +1,7 @@
 rule all:
     input:
         "data-plot/spag-sim-norand.pdf",
+        "data-plot/spag-sim-rand.pdf",
         "model-fit-plot/preds-plot-sim-norand.pdf"
 
 rule install_deps:
@@ -16,7 +17,8 @@ rule sim_data:
         ".deps-installed",
         "data/sim.R"
     output:
-        "data/sim-norand.csv"
+        "data/sim-norand.csv",
+        "data/sim-rand.csv"
     shell:
         "Rscript data/sim.R"
 
@@ -26,7 +28,8 @@ rule plot_data:
         "data/sim-norand.csv",
         "data-plot/spag.R"
     output:
-        "data-plot/spag-sim-norand.pdf"
+        "data-plot/spag-sim-norand.pdf",
+        "data-plot/spag-sim-rand.pdf"
     shell:
         "Rscript data-plot/spag.R"
 
