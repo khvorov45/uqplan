@@ -9,21 +9,7 @@ data_plot_dir <- here("data-plot")
 
 # Functions ===================================================================
 
-read_data <- function(name) {
-  read_csv(
-    file.path(data_dir, glue::glue("{name}.csv")),
-    col_types = cols(
-      group = col_factor(c("placebo", "low_dose", "high_dose_1", "high_dose_2"))
-    )
-  ) %>%
-    mutate(
-      group = recode(
-        group,
-        "placebo" = "Placebo", "low_dose" = "Low dose",
-        "high_dose_1" = "High dose 1", "high_dose_2" = "High dose 2"
-      )
-    )
-}
+source(file.path(data_dir, "read_data.R"))
 
 spag_plot <- function(dat) {
   titre_breaks <- 5 * 2^(0:12)

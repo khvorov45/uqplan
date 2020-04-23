@@ -1,7 +1,7 @@
 rule all:
     input:
         "data-plot/spag-sim-norand.pdf",
-        "model-fit/preds-sim-norand.csv"
+        "model-fit-plot/preds-plot-sim-norand.pdf"
 
 rule install_deps:
     input:
@@ -39,3 +39,13 @@ rule model_fit:
         "model-fit/preds-sim-norand.csv"
     shell:
         "Rscript model-fit/model-fit.R"
+
+rule model_fit_plot:
+    input:
+        ".deps-installed",
+        "model-fit-plot/model-fit-plot.R",
+        "model-fit/preds-sim-norand.csv"
+    output:
+        "model-fit-plot/preds-plot-sim-norand.pdf"
+    shell:
+        "Rscript model-fit-plot/model-fit-plot.R"
