@@ -16,7 +16,16 @@ fit_norand <- function(data) {
   lm(logtitre ~ week + hockey + group:week + group:hockey, data)
 }
 
-gen_predict <- function(fit, data) {
+fit_rand <- function(data) {
+  lmer(
+    logtitre ~ week + hockey + group:week + group:hockey +
+      (week + hockey | ind),
+    data,
+    control = lmerControl(optimizer = "Nelder_Mead")
+  )
+}
+
+gen_to_pred <- function(data) {
   all_weeks <- unique(data$week)
   all_groups <- unique(data$group)
   to_pred <- tibble(
@@ -24,6 +33,10 @@ gen_predict <- function(fit, data) {
     group = rep(all_groups, each = length(all_weeks)),
     hockey = if_else(week < 2L, 0, week - 2L)
   )
+}
+
+gen_predict <- function(fit, data) {
+  to_pred <- gen_to_pred(data)
   preds <- predict(fit, to_pred, se.fit = TRUE)
   mutate(
     to_pred,
@@ -31,6 +44,11 @@ gen_predict <- function(fit, data) {
     fit_low = fit - qnorm(0.975) * fit_se,
     fit_high = fit + qnorm(0.975) * fit_se
   )
+}
+
+predict_rand <- function(fit, data) {
+  to_pred <- gen_to_pred(data)
+  predict(fit, to_pred, re.form = NA)
 }
 
 save_preds <- function(data, name) {
@@ -43,3 +61,6 @@ sim_norand <- read_data("sim-norand")
 fit_norand_sim_norand <- fit_norand(sim_norand)
 preds_sim_norand <- gen_predict(fit_norand_sim_norand, sim_norand)
 save_preds(preds_sim_norand, "sim-norand")
+
+sim_rand <- read_data("sim-rand")
+fit_sim_rand <- fit_rand(sim_rand)

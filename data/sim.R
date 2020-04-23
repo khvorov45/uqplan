@@ -85,7 +85,7 @@ rand <- simulate_data(
   beta_week = 0,
   beta_hockey = 0,
   group_parameters = group_parameters,
-  random_sds = list("beta_0" = 0.5, "beta_week" = 0.1, "beta_hockey" = 0.05),
-  logtitre_sd = 0.5
+  random_sds = list("beta_0" = 0.5, "beta_week" = 0.1, "beta_hockey" = 0.1),
+  logtitre_sd = 0.4
 )
 save_sim(rand, "rand")
