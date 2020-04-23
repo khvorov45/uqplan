@@ -60,10 +60,10 @@ save_sim <- function(data, name) {
 
 # Everything is expressed as deviation from the reference
 group_parameters <- list(
-  reference = c("beta_week" = 0, "beta_hockey" = 0),
-  low_dose = c("beta_week" = 3, "beta_hockey" = -3.1),
-  high_dose_1 = c("beta_week" = 4, "beta_hockey" = -4.07),
-  high_dose_2 = c("beta_week" = 5, "beta_hockey" = -5.05)
+  placebo = c("beta_week" = 0, "beta_hockey" = 0),
+  low_dose = c("beta_week" = 2, "beta_hockey" = -2.1),
+  high_dose_1 = c("beta_week" = 3, "beta_hockey" = -3.07),
+  high_dose_2 = c("beta_week" = 4, "beta_hockey" = -4.05)
 )
 
 expected <- simulate_data(
