@@ -66,17 +66,6 @@ group_parameters <- list(
   high_dose_2 = c("beta_week" = 4, "beta_hockey" = -4.05)
 )
 
-expected <- simulate_data(
-  n_per_group = 1,
-  beta_0 = 0,
-  beta_week = 0,
-  beta_hockey = 0,
-  group_parameters = group_parameters,
-  random_sds = list("beta_0" = 0, "beta_week" = 0, "beta_hockey" = 0),
-  logtitre_sd = 0
-)
-save_sim(expected, "expected")
-
 norand <- simulate_data(
   n_per_group = 24,
   beta_0 = 0,

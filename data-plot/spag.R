@@ -29,13 +29,17 @@ spag_plot <- function(dat) {
   titre_breaks <- 5 * 2^(0:12)
   ggplot(dat, aes(week, logtitre)) +
     ggdark::dark_theme_bw(verbose = FALSE) +
-    theme(strip.background = element_blank()) +
+    theme(
+      strip.background = element_blank(),
+      panel.grid.minor.y = element_blank()
+    ) +
     facet_wrap(~group, nrow = 1) +
     scale_y_continuous(
       "Titre",
       breaks = log(titre_breaks), labels = titre_breaks
     ) +
-    geom_line(aes(group = ind))
+    geom_line(aes(group = ind), alpha = 0.2) +
+    geom_line(aes(y = logtitre_exp), lwd = 1, col = "red")
 }
 
 save_spag <- function(pl, name, width = 12, height = 7.5) {
@@ -46,10 +50,6 @@ save_spag <- function(pl, name, width = 12, height = 7.5) {
 }
 
 # Script ======================================================================
-
-sim_expected <- read_data("sim-expected")
-sim_expected_spag <- spag_plot(sim_expected)
-save_spag(sim_expected_spag, "sim-expected")
 
 sim_norand <- read_data("sim-norand")
 sim_norand_spag <- spag_plot(sim_norand)
