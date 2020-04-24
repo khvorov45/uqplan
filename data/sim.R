@@ -9,51 +9,26 @@ data_dir <- here::here("data")
 
 #' Simulate data
 #'
+#' The underlying model is for post-intervention titres.
 #'
-simulate_data <- function(n_per_group, beta_0, beta_week, beta_hockey,
+#' @param n_per_group Number of participants in a group.
+#' @param weeks Post-intervention week indexes.
+#' @param beta_0,beta_base,beta_base Regression parameters.
+#' @param group_parameters Group-associated regression parameters expressed
+#'   as deviations from the reference.
+#' @param random_sds Random effect standard deviations.
+#' @param logtitre_sd Logtitre standard deviation.
+simulate_data <- function(n_per_group, weeks, beta_0, beta_base, beta_week,
                           group_parameters, random_sds, logtitre_sd) {
-  weeks <- c(0L, 2L, 4L, 6L, 8L)
   tibble(
-    ind = rep(
-      seq_len(n_per_group * length(group_parameters)),
-      each = length(weeks)
-    ),
-    week = rep(weeks, length(group_parameters) * n_per_group),
-    group = rep(
-      names(group_parameters),
-      each = length(weeks) * n_per_group
-    ),
-    beta_0_ind = rep(
-      rnorm(
-        n_per_group * length(group_parameters), beta_0, random_sds[["beta_0"]]
-      ),
-      each = length(weeks)
-    ),
-    beta_week_group = beta_week + map_dbl(
-      group, ~ group_parameters[[.x]][["beta_week"]]
-    ),
-    beta_hockey_group = beta_hockey + map_dbl(
-      group, ~ group_parameters[[.x]][["beta_hockey"]]
-    )
-  ) %>%
-    group_by(ind) %>%
-    mutate(
-      beta_week_ind = rnorm(
-        1, first(beta_week_group), random_sds[["beta_week"]]
-      ),
-      beta_hockey_ind = rnorm(
-        1, first(beta_hockey_group), random_sds[["beta_hockey"]]
-      )
-    ) %>%
-    ungroup() %>%
-    mutate(
-      hockey = if_else(week < 2L, 0L, week - 2L),
-      logtitre_exp_group =
-        beta_0 + beta_week_group * week + beta_hockey_group * hockey,
-      logtitre_exp_ind =
-        beta_0_ind + beta_week_ind * week + beta_hockey_ind * hockey,
-      logtitre = rnorm(n(), logtitre_exp_ind, logtitre_sd)
-    )
+    group = names(group_parameters),
+    beta_0_group = beta_0 +
+      map_dbl(group, ~ group_parameters[[.x]][["beta_0"]]),
+    beta_base_group = beta_base +
+      map_dbl(group, ~ group_parameters[[.x]][["beta_base"]]),
+    beta_week_group = beta_week +
+      map_dbl(group, ~ group_parameters[[.x]][["beta_week"]])
+  )
 }
 
 save_sim <- function(data, name) {
@@ -64,29 +39,25 @@ save_sim <- function(data, name) {
 
 # Everything is expressed as deviation from the reference
 group_parameters <- list(
-  placebo = c("beta_week" = 0, "beta_hockey" = 0),
-  low_dose = c("beta_week" = 2, "beta_hockey" = -2.1),
-  high_dose_1 = c("beta_week" = 3, "beta_hockey" = -3.07),
-  high_dose_2 = c("beta_week" = 4, "beta_hockey" = -4.05)
+  placebo = c("beta_0" = 0, "beta_base" = 0, "beta_week" = 0),
+  low_dose = c("beta_0" = 2, "beta_base" = 0, "beta_week" = 0),
+  high_dose_1 = c("beta_0" = 3, "beta_base" = 0, "beta_week" = 0),
+  high_dose_2 = c("beta_0" = 4, "beta_base" = 0, "beta_week" = 0)
 )
 
 simulation_parameters <- list(
   norand = list(
-    n_per_group = 24,
-    beta_0 = 0,
-    beta_week = 0,
-    beta_hockey = 0,
+    n_per_group = 24, weeks = seq(2, 8, 2),
+    beta_0 = 0, beta_base = 1, beta_week = -0.1,
     group_parameters = group_parameters,
-    random_sds = list("beta_0" = 0, "beta_week" = 0, "beta_hockey" = 0),
+    random_sds = list("beta_0" = 0, "beta_base" = 0, "beta_week" = 0),
     logtitre_sd = 1
   ),
   rand = list(
-    n_per_group = 24,
-    beta_0 = 0,
-    beta_week = 0,
-    beta_hockey = 0,
+    n_per_group = 24, weeks = seq(2, 8, 2),
+    beta_0 = 0, beta_base = 1, beta_week = -0.1,
     group_parameters = group_parameters,
-    random_sds = list("beta_0" = 0.5, "beta_week" = 0.1, "beta_hockey" = 0.1),
+    random_sds = list("beta_0" = 0.5, "beta_base" = 0.1, "beta_week" = 0.1),
     logtitre_sd = 0.4
   )
 )

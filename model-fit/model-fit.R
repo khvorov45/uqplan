@@ -63,8 +63,11 @@ save_preds(preds_sim_norand, "sim-norand")
 sim_rand <- read_data("sim-rand")
 fit_sim_rand <- fit_rand(sim_rand)
 
-sim_rand %>%
+alt_mod <- sim_rand %>%
   group_by(ind) %>%
   mutate(logtitre_base = logtitre[week == 0L]) %>%
   ungroup() %>%
-  filter(week > 0L)
+  filter(week > 0L) %>%
+  select(ind, group, week, logtitre, logtitre_base)
+
+lmer(logtitre ~ logtitre_base + group + (1 | ind), alt_mod)
