@@ -1,12 +1,10 @@
 # Model fitting
 
 library(tidyverse)
-library(here)
-library(lme4)
 
 # Directories used
-data_dir <- here("data")
-model_fit_dir <- here("model-fit")
+data_dir <- here::here("data")
+model_fit_dir <- here::here("model-fit")
 
 # Functions ===================================================================
 
@@ -17,11 +15,11 @@ fit_norand <- function(data) {
 }
 
 fit_rand <- function(data) {
-  lmer(
+  lme4::lmer(
     logtitre ~ week + hockey + group:week + group:hockey +
       (week + hockey | ind),
     data,
-    control = lmerControl(optimizer = "Nelder_Mead")
+    control = lme4::lmerControl(optimizer = "Nelder_Mead")
   )
 }
 
@@ -58,8 +56,8 @@ save_preds <- function(data, name) {
 # Script ======================================================================
 
 sim_norand <- read_data("sim-norand")
-fit_norand_sim_norand <- fit_norand(sim_norand)
-preds_sim_norand <- gen_predict(fit_norand_sim_norand, sim_norand)
+fit_sim_norand <- fit_norand(sim_norand)
+preds_sim_norand <- gen_predict(fit_sim_norand, sim_norand)
 save_preds(preds_sim_norand, "sim-norand")
 
 sim_rand <- read_data("sim-rand")

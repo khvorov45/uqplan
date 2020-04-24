@@ -1,11 +1,10 @@
 # Spaghetti plots
 
 library(tidyverse)
-library(here)
 
 # Directories used
-data_dir <- here("data")
-data_plot_dir <- here("data-plot")
+data_dir <- here::here("data")
+data_plot_dir <- here::here("data-plot")
 
 # Functions ===================================================================
 
@@ -37,10 +36,8 @@ save_spag <- function(pl, name, width = 12, height = 7.5) {
 
 # Script ======================================================================
 
-sim_norand <- read_data("sim-norand")
-sim_norand_spag <- spag_plot(sim_norand)
-save_spag(sim_norand_spag, "sim-norand")
+data <- map(c("sim-norand" = "sim-norand", "sim-rand" = "sim-rand"), read_data)
 
-sim_rand <- read_data("sim-rand")
-sim_rand_spag <- spag_plot(sim_rand)
-save_spag(sim_rand_spag, "sim-rand")
+spag_plots <- map(data, spag_plot)
+
+iwalk(spag_plots, save_spag)

@@ -1,10 +1,9 @@
 # Simulated data
 
 library(tidyverse)
-library(here)
 
 # Directories used
-data_dir <- here("data")
+data_dir <- here::here("data")
 
 # Functions ===================================================================
 
@@ -68,24 +67,27 @@ group_parameters <- list(
   high_dose_2 = c("beta_week" = 4, "beta_hockey" = -4.05)
 )
 
-norand <- simulate_data(
-  n_per_group = 24,
-  beta_0 = 0,
-  beta_week = 0,
-  beta_hockey = 0,
-  group_parameters = group_parameters,
-  random_sds = list("beta_0" = 0, "beta_week" = 0, "beta_hockey" = 0),
-  logtitre_sd = 1
+simulation_parameters <- list(
+  norand = list(
+    n_per_group = 24,
+    beta_0 = 0,
+    beta_week = 0,
+    beta_hockey = 0,
+    group_parameters = group_parameters,
+    random_sds = list("beta_0" = 0, "beta_week" = 0, "beta_hockey" = 0),
+    logtitre_sd = 1
+  ),
+  rand = list(
+    n_per_group = 24,
+    beta_0 = 0,
+    beta_week = 0,
+    beta_hockey = 0,
+    group_parameters = group_parameters,
+    random_sds = list("beta_0" = 0.5, "beta_week" = 0.1, "beta_hockey" = 0.1),
+    logtitre_sd = 0.4
+  )
 )
-save_sim(norand, "norand")
 
-rand <- simulate_data(
-  n_per_group = 24,
-  beta_0 = 0,
-  beta_week = 0,
-  beta_hockey = 0,
-  group_parameters = group_parameters,
-  random_sds = list("beta_0" = 0.5, "beta_week" = 0.1, "beta_hockey" = 0.1),
-  logtitre_sd = 0.4
-)
-save_sim(rand, "rand")
+simulated_data <- map(simulation_parameters, ~ do.call(simulate_data, .x))
+
+iwalk(simulated_data, save_sim)
