@@ -7,6 +7,9 @@ data_dir <- here::here("data")
 
 # Functions ===================================================================
 
+#' Simulate data
+#'
+#'
 simulate_data <- function(n_per_group, beta_0, beta_week, beta_hockey,
                           group_parameters, random_sds, logtitre_sd) {
   weeks <- c(0L, 2L, 4L, 6L, 8L)

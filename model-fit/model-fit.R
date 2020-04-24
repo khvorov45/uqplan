@@ -29,7 +29,7 @@ gen_to_pred <- function(data) {
   to_pred <- tibble(
     week = rep(all_weeks, length(all_groups)),
     group = rep(all_groups, each = length(all_weeks)),
-    hockey = if_else(week < 2L, 0, week - 2L)
+    hockey = if_else(week < 2L, 0L, week - 2L)
   )
 }
 
@@ -62,3 +62,9 @@ save_preds(preds_sim_norand, "sim-norand")
 
 sim_rand <- read_data("sim-rand")
 fit_sim_rand <- fit_rand(sim_rand)
+
+sim_rand %>%
+  group_by(ind) %>%
+  mutate(logtitre_base = logtitre[week == 0L]) %>%
+  ungroup() %>%
+  filter(week > 0L)
