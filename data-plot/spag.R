@@ -12,7 +12,7 @@ source(file.path(data_dir, "read_data.R"))
 
 spag_plot <- function(dat) {
   titre_breaks <- 5 * 2^(0:12)
-  ggplot(dat, aes(week, logtitre)) +
+  ggplot(dat, aes(week, logtitre_ind)) +
     ggdark::dark_theme_bw(verbose = FALSE) +
     theme(
       strip.background = element_blank(),
@@ -23,8 +23,7 @@ spag_plot <- function(dat) {
       "Titre",
       breaks = log(titre_breaks), labels = titre_breaks
     ) +
-    geom_line(aes(group = ind), alpha = 0.2) +
-    geom_line(aes(y = logtitre_exp_group), lwd = 1, col = "red")
+    geom_line(aes(group = ind), alpha = 0.2)
 }
 
 save_spag <- function(pl, name, width = 12, height = 7.5) {
