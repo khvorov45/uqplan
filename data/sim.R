@@ -83,8 +83,8 @@ simulation_parameters <- list(
   norand = std_pars,
   rand = mod_std_pars(
     std_pars,
-    random_sds = list("beta_0" = 0.25, "beta_base" = 0, "beta_week" = 0),
-    logtitre_sd = 0.25
+    random_sds = list("beta_0" = 0.25, "beta_base" = 0, "beta_week" = 0.1),
+    logtitre_sd = 0.3
   )
 )
 
